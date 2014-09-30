@@ -5,6 +5,6 @@ var app = {
     },
 
     onDeviceReady: function () {
-
+        $('.a').html(device.name + "-hall");
     }
 };
