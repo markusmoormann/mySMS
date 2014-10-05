@@ -1,51 +1,36 @@
 var app = {
-    // Application Constructor
+    client: null,
     initialize: function () {
+        this.client = new XmppClient('http://mysms.local/http-bind/');
         document.addEventListener('deviceready', this.onDeviceReady, false);
     },
-
+    handleMsg: function (data) {
+        var $data = $(data);
+        var from = $data.attr('from');
+        var msg = $data.find('body').html();
+        console.log(Strophe.getNodeFromJid(from) + ": " + msg);
+        $('.chat').append(Strophe.getNodeFromJid(from) + ": " + msg + "<br />");
+        return true;
+    },
     onDeviceReady: function () {
-        var client = XMPP.createClient({
-            jid: 'admin@markuss-macbook-pro.local',
-            password: 'admin',
-            boshURL: 'http://mysms.local/http-bind/',
-            transports: ['bosh'],
-            softwareVersion: {
-                name: 'mySMS',
-                version: '0.0.1',
-                os: 'iOS'
-            },
-            lang: 'de'
+        var that = this;
+        this.client.on('connected', function () {
+            that.client.sendPresence();
+            that.client.addHandler(app.handleMsg, null, 'message', 'chat');
         });
 
-        client.on('connected', function () {
-            console.log("connected");
-        });
-
-        client.on('session:started', function () {
-            debugger;
-            client.getRoster();
-            client.sendPresence();
-        });
-
-        client.on('session:error', function (a) {
-            console.log("error in session");
-            console.log(a);
-            client.disconnect();
-        });
-//
-//        client.on('chat', function (msg) {
-//            client.sendMessage({
-//                to: msg.from,
-//                body: 'You sent: ' + msg.body
-//            });
-//        });
-
-        client.connect();
     }
 };
 
 app.initialize();
-
 app.onDeviceReady();
 
+$(function () {
+    $('.btn').click(function () {
+        app.client.on('connected', function () {
+            $('.login').hide();
+            $('.chat').show();
+        });
+        app.client.connect($('#username').val() + '@markuss-macbook-pro.local/test', $('#password').val());
+    });
+});

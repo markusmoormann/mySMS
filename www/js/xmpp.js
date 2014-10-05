@@ -1,52 +1,65 @@
-//var Hello = {
-//    connection: null,
-//    start_time: null,
-//    log: function (msg) {
-//        console.log(msg);
-//    },
-//    send_ping: function (to) {
-//        var ping = $iq({
-//            to: to,
-//            type: "get",
-//            id: "ping1"}).c("ping", {xmlns: "urn:xmpp:ping"});
-//        Hello.log("Sending ping to " + to + ".");
-//        Hello.start_time = (new Date()).getTime();
-//        Hello.connection.send(ping);
-//    },
-//    handle_pong: function (iq) {
-//        var elapsed = (new Date()).getTime() - Hello.start_time;
-//        Hello.log("Received pong from server in " + elapsed + "ms.");
-//        Hello.connection.disconnect();
-//        return false;
-//    }
-//};
-//$(document).ready(function () {
-//    $(document).trigger('connect', {
-//        jid: "admin@markuss-macbook-pro.local",
-//        password: "admin"
-//    });
-//
-//});
-//$(document).bind('connect', function (ev, data) {
-//    var conn = new Strophe.Connection("/http-bind/");
-//    conn.connect(data.jid, data.password, function (status) {
-//        if (status === Strophe.Status.CONNECTED) {
-//            $(document).trigger('connected');
-//        } else if (status === Strophe.Status.DISCONNECTED) {
-//            $(document).trigger('disconnected');
-//        }
-//    });
-//    Hello.connection = conn;
-//});
-//$(document).bind('connected', function () {
-//// inform the user
-//    Hello.log("Connection established.");
-//    Hello.connection.addHandler(Hello.handle_pong, null, "iq", null, "ping1");
-//    var domain = Strophe.getDomainFromJid(Hello.connection.jid);
-//    Hello.send_ping(domain);
-//});
-//$(document).bind('disconnected', function () {
-//    Hello.log("Connection terminated.");
-//// remove dead connection object
-//    Hello.connection = null;
-//});
+function XmppClient(url) {
+    this.url = url;
+    this.connection = new Strophe.Connection(url);
+}
+
+XmppClient.prototype.disconnect = function () {
+    this.connection.disconnect();
+    this.connection = null;
+};
+
+XmppClient.prototype.connect = function (jid, password) {
+    var client = this;
+    this.connection.connect(jid, password, function (status) {
+        switch (status) {
+            case Strophe.Status.ATTACHED:
+                $(client).trigger('attached');
+                break;
+            case Strophe.Status.AUTHENTICATING:
+                $(client).trigger('authenticating');
+                break;
+            case Strophe.Status.AUTHFAIL:
+                $(client).trigger('authfail');
+                break;
+            case Strophe.Status.CONNECTED:
+                $(client).trigger('connected');
+                break;
+            case Strophe.Status.CONNECTING:
+                $(client).trigger('connecting');
+                break;
+            case Strophe.Status.CONNFAIL:
+                $(client).trigger('connfail');
+                break;
+            case Strophe.Status.DISCONNECTED:
+                client.connection = null;
+                $(client).trigger('disconnected');
+                break;
+            case Strophe.Status.DISCONNECTING:
+                $(client).trigger('disconnecting');
+                break;
+            case Strophe.Status.ERROR:
+                $(client).trigger('error');
+                break;
+        }
+    });
+};
+
+XmppClient.prototype.send = function (data) {
+    this.connection.send(data);
+};
+
+XmppClient.prototype.on = function (eventname, listener) {
+    $(this).bind(eventname, listener);
+};
+
+XmppClient.prototype.addHandler = function (handler, ns, name, type, id, from, options) {
+    this.connection.addHandler(handler, ns, name, type, id, from, options)
+};
+
+XmppClient.prototype.deleteHandler = function (ref) {
+    this.connection.deleteHandler(ref);
+};
+
+XmppClient.prototype.sendPresence = function () {
+    this.send($pres());
+};
