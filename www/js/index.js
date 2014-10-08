@@ -8,8 +8,10 @@ var app = {
         var $data = $(data);
         var from = $data.attr('from');
         var msg = $data.find('body').html();
-        console.log(Strophe.getNodeFromJid(from) + ": " + msg);
-        $('.chat').append(Strophe.getNodeFromJid(from) + ": " + msg + "<br />");
+        if (msg) {
+            console.log(Strophe.getNodeFromJid(from) + ": " + msg);
+            $('.chat').append(Strophe.getNodeFromJid(from) + ": " + msg + "<br />");
+        }
         return true;
     },
     onDeviceReady: function () {
@@ -17,6 +19,7 @@ var app = {
         this.client.on('connected', function () {
             that.client.sendPresence();
             that.client.addHandler(app.handleMsg, null, 'message', 'chat');
+            that.client.addHandler(XEP_0085.handleChatState, XEP_0085.NS, 'message', 'chat');
         });
 
     }
