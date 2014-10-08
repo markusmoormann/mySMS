@@ -44,6 +44,10 @@ XmppClient.prototype.connect = function (jid, password) {
     });
 };
 
+XmppClient.prototype.getRoster = function () {
+    this.send($iq({type: 'get'}).c('query', {xmlns: Strophe.NS.ROSTER}));
+};
+
 XmppClient.prototype.send = function (data) {
     this.connection.send(data);
 };

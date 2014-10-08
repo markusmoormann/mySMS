@@ -1,5 +1,6 @@
 var app = {
     client: null,
+    db: null,
     initialize: function () {
         this.client = new XmppClient('http://mysms.local/http-bind/');
         document.addEventListener('deviceready', this.onDeviceReady, false);
@@ -14,12 +15,25 @@ var app = {
         }
         return true;
     },
+    handleRoster: function (data) {
+        var $data = $(data);
+        if ($data.attr('type') == 'result') {
+            $data.find('query > item').each(function(key, value) {
+                var $value = $(value);
+            })
+        } else {
+            console.log("type is not result");
+        }
+        return true;
+    },
     onDeviceReady: function () {
         var that = this;
         this.client.on('connected', function () {
-            that.client.sendPresence();
             that.client.addHandler(app.handleMsg, null, 'message', 'chat');
+            that.client.addHandler(app.handleRoster, Strophe.NS.ROSTER, 'iq');
             that.client.addHandler(XEP_0085.handleChatState, XEP_0085.NS, 'message', 'chat');
+            that.client.getRoster();
+            that.client.sendPresence();
         });
 
     }
