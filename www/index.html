@@ -13,22 +13,24 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/index.css"/>
     <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/lib/jquery.min.js"></script>
-    <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/lib/strophe.min.js"></script>
-    <script type="text/javascript" src="js/plugins/xep-0085.js"></script>
-    <script type="text/javascript" src="js/domain.js"></script>
-    <script type="text/javascript" src="js/xmpp.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
+    <script data-main="js/main" src="js/lib/require.min.js"></script>
 </head>
 <body>
 <div class="login">
     <input id="username"><br/>
     <input id="password" type="password"><br/>
-    <button class="btn">einloggen</button>
+    <button class="btn">einloggens</button>
 </div>
 <div class="chat" style="display: none;">
-    chat
+    <div>
+
+    </div>
+    <div class="msg-input">
+        <textarea></textarea>
+        <button class="btn">
+            senden
+        </button>
+    </div>
 </div>
 </body>
 </html>
