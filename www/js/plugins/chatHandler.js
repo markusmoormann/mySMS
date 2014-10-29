@@ -7,7 +7,6 @@ define(['app/client', 'jquery'], function (client, $) {
         var from = $msg.attr('from');
         var body = $msg.find('body').html();
         if (body) {
-            console.log(Strophe.getNodeFromJid(from) + ": " + body);
             $('.chat').append(Strophe.getNodeFromJid(from) + ": " + body + "<br />");
         }
         return true;

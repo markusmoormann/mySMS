@@ -24,6 +24,13 @@ require([
 ], function (app, client, $) {
     app.initialize();
     client.initialize("http://mysms.local/http-bind/");
+    client.on('connfail', function(evt) {
+
+        alert("connfail");
+    });
+    client.on('error', function(evt) {
+        alert("error");
+    });
 
     $('.btn').click(function () {
         client.on('connected', function () {
@@ -34,4 +41,5 @@ require([
         });
         client.connect($('#username').val() + '@markuss-macbook-pro.local/test', $('#password').val());
     });
+
 });

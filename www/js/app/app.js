@@ -27,7 +27,8 @@ define(['jquery'], function ($) {
     };
 
     var onDeviceReady = function () {
-
+        $('#file').html(cordova.file.applicationDirectory)
+        console.log(cordova.file.applicationDirectory);
     };
 
     return {

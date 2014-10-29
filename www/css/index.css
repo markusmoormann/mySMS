@@ -12,3 +12,7 @@
 textarea {
     resize: none;
 }
+
+.login, .chat {
+    margin-top: 20px;
+}
